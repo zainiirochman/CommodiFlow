@@ -2,6 +2,7 @@ import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/analytics.dart';
 import 'package:commodi_flow/screen/input.dart';
 import 'package:commodi_flow/screen/profile.dart';
+import 'package:commodi_flow/screen/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
@@ -332,20 +333,51 @@ class _HomeState extends State<Home> {
                   ),
                   const SizedBox(height: 24),
 
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text(
-                      'Transaksi Terakhir',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Transaksi Terakhir',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TransactionPage(),
+                              ),
+                            );
+                            _fetchData();
+                          },
+                          child: const Text(
+                            'Lihat Semua',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 12),
                   Expanded(
                     child: _transactions.isEmpty
-                        ? Center(child: Text('Tidak ada transaksi bulan ini'))
+                        ? Center(
+                            child: Text(
+                              'Tidak ada transaksi bulan ini',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
                         : _buildRecentTransactions(),
                   ),
                 ],
