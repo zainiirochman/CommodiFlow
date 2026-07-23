@@ -28,21 +28,36 @@ class _InputState extends State<Input> {
   String? _selectedKategori;
   String? _selectedNamaKategori;
   final List<String> _kategoriOptions = ['Pemasukan', 'Pengeluaran'];
-  final List<String> _namaKategoriOptions = [
-    'Beli dari petani',
-    'Jual ke pembeli',
-    'Transportasi',
-  ];
+  List<String> _namaKategoriOptions = [];
 
   final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
 
   @override
   void initState() {
     super.initState();
+    _fetchCategories();
     if (widget.imagePath.isNotEmpty) {
       _processImageWithRealAI();
     } else {
       _isLoading = false;
+    }
+  }
+
+  Future<void> _fetchCategories() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    final data = await supabase
+        .from('kategori_transaksi')
+        .select('nama_kategori')
+        .eq('user_id', user.id);
+
+    if (mounted) {
+      setState(() {
+        _namaKategoriOptions = List<String>.from(
+          data.map((item) => item['nama_kategori'] as String),
+        );
+      });
     }
   }
 
@@ -395,14 +410,23 @@ class _InputState extends State<Input> {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: _selectedNamaKategori,
+            value:
+                _selectedNamaKategori != null &&
+                    _namaKategoriOptions.contains(_selectedNamaKategori)
+                ? _selectedNamaKategori
+                : null,
             decoration: const InputDecoration(
               labelText: 'Keterangan Kategori',
               border: OutlineInputBorder(),
             ),
-            items: _namaKategoriOptions.map((String value) {
-              return DropdownMenuItem<String>(value: value, child: Text(value));
-            }).toList(),
+            items: _namaKategoriOptions.isEmpty
+                ? [const DropdownMenuItem(value: '', child: Text('Memuat...'))]
+                : _namaKategoriOptions.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
             onChanged: (String? newValue) {
               setState(() {
                 _selectedNamaKategori = newValue;
