@@ -24,11 +24,9 @@
 
 ## 📸 Cuplikan Layar (Screenshots)
 
-> **Catatan Developer:** *Silakan ganti URL gambar di bawah dengan tautan gambar antarmuka aplikasi (UI) Anda yang sebenarnya.*
-
-| Dashboard Home | AI Scanner & Input | Laporan Analitik |
+| Login | Home | Laporan Analitik | Input | Profil |
 | :---: | :---: | :---: |
-| <img src="https://via.placeholder.com/250x500.png?text=Home+Screen" width="200"> | <img src="https://via.placeholder.com/250x500.png?text=AI+Scanner" width="200"> | <img src="https://via.placeholder.com/250x500.png?text=Analytics+Chart" width="200"> |
+| <img src="https://github.com/user-attachments/assets/95595ba2-59e6-467f-a6e0-772ec2b07902" width="200"> | <img src="https://github.com/user-attachments/assets/fb99d4e3-bab6-4750-a3ef-df6eb0844a1a" width="200"> | <img src="https://github.com/user-attachments/assets/d3390ae0-bb6a-4769-ba27-db6d1f50fdf4" width="200"> | <img src="https://github.com/user-attachments/assets/e7e709a2-a635-45f2-9393-694494ee17f9" width="200"> | <img src="https://github.com/user-attachments/assets/69fc5d4c-cbc6-4667-913c-7158fdddb114" width="200">
 
 ---
 
