@@ -49,5 +49,5 @@ Ikuti langkah-langkah berikut untuk menjalankan CommodiFlow di mesin lokal Anda:
 
 ### 1. Kloning Repositori
 ```bash
-git clone [https://github.com/username-anda/commodi-flow.git](https://github.com/username-anda/commodi-flow.git)
+git clone https://github.com/zainiirochman/CommodiFlow.git
 cd commodi-flow
