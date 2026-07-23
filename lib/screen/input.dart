@@ -26,7 +26,13 @@ class _InputState extends State<Input> {
   final TextEditingController _stokCtrl = TextEditingController();
 
   String? _selectedKategori;
+  String? _selectedNamaKategori;
   final List<String> _kategoriOptions = ['Pemasukan', 'Pengeluaran'];
+  final List<String> _namaKategoriOptions = [
+    'Beli dari petani',
+    'Jual ke pembeli',
+    'Transportasi',
+  ];
 
   final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
 
@@ -43,7 +49,8 @@ class _InputState extends State<Input> {
   Future<void> _saveTransaction() async {
     if (_nominalCtrl.text.isEmpty ||
         _tanggalCtrl.text.isEmpty ||
-        _selectedKategori == null) {
+        _selectedKategori == null ||
+        _selectedNamaKategori == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Harap lengkapi semua field yang wajib diisi.'),
@@ -72,7 +79,7 @@ class _InputState extends State<Input> {
           .from('kategori_transaksi')
           .select('id')
           .eq('user_id', user.id)
-          .eq('nama_kategori', _selectedKategori!)
+          .eq('nama_kategori', _selectedNamaKategori!)
           .maybeSingle();
 
       String categoryId;
@@ -81,7 +88,7 @@ class _InputState extends State<Input> {
             .from('kategori_transaksi')
             .insert({
               'user_id': user.id,
-              'nama_kategori': _keteranganCtrl.text,
+              'nama_kategori': _selectedNamaKategori,
               'jenis': _selectedKategori,
             })
             .select('id')
@@ -382,6 +389,23 @@ class _InputState extends State<Input> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedKategori = newValue;
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+
+          DropdownButtonFormField<String>(
+            value: _selectedNamaKategori,
+            decoration: const InputDecoration(
+              labelText: 'Keterangan Kategori',
+              border: OutlineInputBorder(),
+            ),
+            items: _namaKategoriOptions.map((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedNamaKategori = newValue;
               });
             },
           ),

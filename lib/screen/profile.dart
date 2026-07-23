@@ -1,6 +1,7 @@
 import 'package:commodi_flow/screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -67,128 +68,146 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 16),
-              Center(
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Color(0xFF2E7D32),
-                      backgroundImage: profilePictureUrl.isNotEmpty
-                          ? NetworkImage(profilePictureUrl)
-                          : null,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Image.network(
-                        'https://img.icons8.com/?size=100&id=17949&format=png&color=000000',
-                        height: 16,
-                        width: 16,
-                      ),
-                    ),
-                  ],
-                ),
+      body: _isLoading
+          ? Center(
+              child: Lottie.asset(
+                'assets/lottie/Loading.json',
+                height: 250,
+                width: 250,
               ),
-              const SizedBox(height: 16),
-              Text(
-                userName,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Bakul Iwak - Tulungagung',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 32),
-
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 16.0,
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildMenuItem(
-                      icon: Icons.category_rounded,
-                      iconBgColor: Colors.purple.shade50,
-                      iconColor: Colors.purple,
-                      title: 'Kelola Kategori',
-                      subtitle: 'Tambah/edit jenis pemasukan & pengeluaran',
-                      onTap: () {},
+                    const SizedBox(height: 16),
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Color(0xFF2E7D32),
+                            backgroundImage: profilePictureUrl.isNotEmpty
+                                ? NetworkImage(profilePictureUrl)
+                                : null,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Image.network(
+                              'https://img.icons8.com/?size=100&id=17949&format=png&color=000000',
+                              height: 16,
+                              width: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    _buildDivider(),
-                    _buildMenuItem(
-                      icon: Icons.picture_as_pdf_rounded,
-                      iconBgColor: Colors.blue.shade50,
-                      iconColor: Colors.blue,
-                      title: 'Ekspor Laporan',
-                      subtitle: 'Unduh laporan laba rugi bulanan (PDF/Excel)',
-                      onTap: () {},
-                    ),
-                    _buildDivider(),
-                    _buildMenuItem(
-                      icon: Icons.help_outline_rounded,
-                      iconBgColor: Colors.orange.shade50,
-                      iconColor: Colors.orange,
-                      title: 'Bantuan & Dukungan',
-                      subtitle: 'Hubungi developer atau baca panduan',
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                    Text(
+                      'Hello Mr.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
+                    const SizedBox(height: 4),
+
+                    Text(
+                      userName,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          _buildMenuItem(
+                            icon: Icons.category_rounded,
+                            iconBgColor: Colors.purple.shade50,
+                            iconColor: Colors.purple,
+                            title: 'Kelola Kategori',
+                            subtitle:
+                                'Tambah/edit jenis pemasukan & pengeluaran',
+                            onTap: () {},
+                          ),
+                          _buildDivider(),
+                          _buildMenuItem(
+                            icon: Icons.picture_as_pdf_rounded,
+                            iconBgColor: Colors.blue.shade50,
+                            iconColor: Colors.blue,
+                            title: 'Ekspor Laporan',
+                            subtitle:
+                                'Unduh laporan laba rugi bulanan (PDF/Excel)',
+                            onTap: () {},
+                          ),
+                          _buildDivider(),
+                          _buildMenuItem(
+                            icon: Icons.help_outline_rounded,
+                            iconBgColor: Colors.orange.shade50,
+                            iconColor: Colors.orange,
+                            title: 'Bantuan & Dukungan',
+                            subtitle: 'Hubungi developer atau baca panduan',
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: _buildMenuItem(
+                        icon: Icons.logout_rounded,
+                        iconBgColor: Colors.red.shade50,
+                        iconColor: Colors.red,
+                        title: 'Keluar (Logout)',
+                        subtitle: 'Keluar dari akun Google ini',
+                        titleColor: Colors.red.shade700,
+                        hideArrow: true,
+                        onTap: _logout,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
-                child: _buildMenuItem(
-                  icon: Icons.logout_rounded,
-                  iconBgColor: Colors.red.shade50,
-                  iconColor: Colors.red,
-                  title: 'Keluar (Logout)',
-                  subtitle: 'Keluar dari akun Google ini',
-                  titleColor: Colors.red.shade700,
-                  hideArrow: true,
-                  onTap: _logout,
-                ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 

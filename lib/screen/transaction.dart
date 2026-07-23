@@ -1,3 +1,4 @@
+import 'package:commodi_flow/screen/edit.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -11,11 +12,9 @@ class TransactionPage extends StatefulWidget {
 class _TransactionPageState extends State<TransactionPage> {
   bool _isLoading = true;
 
-  // Data Asli dari Database
   List<dynamic> _allTransactions = [];
   List<dynamic> _allStocks = [];
 
-  // Data yang Ditampilkan (Setelah Difilter/Search)
   List<dynamic> _filteredTransactions = [];
   List<dynamic> _filteredStocks = [];
 
@@ -72,6 +71,7 @@ class _TransactionPageState extends State<TransactionPage> {
           _applyFilters();
           _isLoading = false;
         });
+        print('${transResponse[0]}');
       }
     } catch (e) {
       if (mounted) {
@@ -481,7 +481,6 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  // --- WIDGET LIST KEUANGAN ---
   Widget _buildFinancialList() {
     if (_filteredTransactions.isEmpty) {
       return _buildEmptyState('Tidak ada transaksi keuangan ditemukan.');
@@ -514,10 +513,18 @@ class _TransactionPageState extends State<TransactionPage> {
           subtitle: '$dateStr ${subtitle.isNotEmpty ? " • $subtitle" : ""}',
           trailingText: amountStr,
           trailingColor: isIncome ? Colors.green : Colors.red,
-          onEdit: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Fitur Edit segera hadir!')),
+          onEdit: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    EditPage(itemData: trxt, tableName: 'transaksi'),
+              ),
             );
+            if (result == true) {
+              await _fetchData();
+              setState(() {});
+            }
           },
           onDelete: () => _deleteData(id, 'transaksi'),
         );
@@ -525,7 +532,6 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  // --- WIDGET LIST STOK ---
   Widget _buildStockList() {
     if (_filteredStocks.isEmpty) {
       return _buildEmptyState('Tidak ada riwayat pergerakan stok ditemukan.');
@@ -567,10 +573,18 @@ class _TransactionPageState extends State<TransactionPage> {
           subtitle: '$dateStr ${keterangan.isNotEmpty ? " • $keterangan" : ""}',
           trailingText: qtyStr,
           trailingColor: iconColor,
-          onEdit: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Fitur Edit segera hadir!')),
+          onEdit: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    EditPage(itemData: stok, tableName: 'pergerakan_stok'),
+              ),
             );
+            if (result == true) {
+              await _fetchData();
+              setState(() {});
+            }
           },
           onDelete: () => _deleteData(id, 'pergerakan_stok'),
         );
@@ -578,7 +592,6 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  // --- WIDGET HELPER ITEM & MENU ---
   Widget _buildListItem({
     required bool isIncome,
     required IconData icon,

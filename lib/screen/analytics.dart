@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, unused_field
+
 import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/home.dart';
 import 'package:commodi_flow/screen/input.dart';
@@ -72,7 +74,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         59,
       ).toIso8601String();
 
-      // 1. QUERY KEUANGAN
       final transResponse = await supabase
           .from('transaksi')
           .select('*, kategori_transaksi(nama_kategori, jenis)')
@@ -84,7 +85,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       double pemasukan = 0;
       double pengeluaran = 0;
 
-      // Variabel sementara untuk Chart Keuangan
       List<double> tempIncome = [0, 0, 0, 0];
       List<double> tempExpense = [0, 0, 0, 0];
       double tempMaxAmount = 0;
@@ -95,7 +95,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         final nominal = (item['nominal'] ?? 0).toDouble();
         final tanggal = DateTime.parse(item['tanggal']);
 
-        // Tentukan ini minggu ke-berapa (0 = Mg 1, 3 = Mg 4)
         int weekIndex = (tanggal.day - 1) ~/ 7;
         if (weekIndex > 3) weekIndex = 3;
 
@@ -411,7 +410,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // --- 3. CHART PERGERAKAN STOK (LINE CHART) ---
                     _buildChartCard(
                       title: 'Pergerakan Stok Gudang',
                       subtitle: 'Tren sisa tonase (Kg) mingguan',
@@ -421,6 +419,31 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 24,
+                        ),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        elevation: 1,
+                      ),
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.download, size: 20),
+                          const SizedBox(width: 8),
+                          Text('Unduh Dalam Bentuk Excel'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -488,8 +511,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval:
-                1, // <--- PERBAIKAN: Memaksa jarak utuh agar label tidak dobel
+            interval: 1,
             getTitlesWidget: (value, meta) {
               const titles = ['Mg 1', 'Mg 2', 'Mg 3', 'Mg 4'];
               return Padding(
@@ -552,8 +574,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     List<PieChartSectionData> sections = [];
 
     for (int i = 0; i < _expenseCategories.length; i++) {
-      if (i > 4)
-        break; // Maksimal tampilkan 5 potongan (top 5 pengeluaran) agar chart tidak terlalu penuh
+      if (i > 4) break;
 
       double percentage =
           (_expenseCategories[i].value / _totalPengeluaran) * 100;
@@ -600,7 +621,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   }
 
   LineChartData _buildLineChartData() {
-    // Cari nilai terendah dan tertinggi asli dari data stok Anda
     double minStok = 0;
     double maxStok = 100;
     if (_weeklyStock.isNotEmpty) {
@@ -608,28 +628,19 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       maxStok = _weeklyStock.reduce((a, b) => a > b ? a : b);
     }
 
-    // Beri bantalan (padding) visual 20% ke atas dan ke bawah
     double range = maxStok - minStok;
     if (range == 0) range = 10;
 
     return LineChartData(
       gridData: FlGridData(show: false),
-      clipData:
-          const FlClipData.all(), // <--- PERBAIKAN: Memotong grafis apa pun yang mencoba keluar kotak
-      maxY:
-          maxStok +
-          (range *
-              0.2), // <--- PERBAIKAN: Batas atas yang dinamis menyesuaikan data
-      minY:
-          minStok -
-          (range *
-              0.2), // <--- PERBAIKAN: Batas bawah yang mentolerir angka negatif
+      clipData: const FlClipData.all(),
+      maxY: maxStok + (range * 0.2),
+      minY: minStok - (range * 0.2),
       titlesData: FlTitlesData(
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval:
-                1, // <--- PERBAIKAN: Memaksa jarak utuh agar label tidak dobel
+            interval: 1,
             getTitlesWidget: (value, meta) {
               const titles = ['Mg1', 'Mg2', 'Mg3', 'Mg4'];
               if (value.toInt() >= 0 && value.toInt() < titles.length) {
