@@ -2,7 +2,7 @@
 
 import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/home.dart';
-import 'package:commodi_flow/screen/input.dart';
+import 'package:commodi_flow/screen/transaction/input.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:image_picker/image_picker.dart';

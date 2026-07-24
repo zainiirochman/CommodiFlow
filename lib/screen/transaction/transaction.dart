@@ -1,4 +1,4 @@
-import 'package:commodi_flow/screen/edit.dart';
+import 'package:commodi_flow/screen/transaction/edit.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -71,7 +71,6 @@ class _TransactionPageState extends State<TransactionPage> {
           _applyFilters();
           _isLoading = false;
         });
-        print('${transResponse[0]}');
       }
     } catch (e) {
       if (mounted) {

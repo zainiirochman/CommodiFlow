@@ -1,8 +1,8 @@
 import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/analytics.dart';
-import 'package:commodi_flow/screen/input.dart';
+import 'package:commodi_flow/screen/transaction/input.dart';
 import 'package:commodi_flow/screen/profile.dart';
-import 'package:commodi_flow/screen/transaction.dart';
+import 'package:commodi_flow/screen/transaction/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';

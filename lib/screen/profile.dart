@@ -1,3 +1,4 @@
+import 'package:commodi_flow/screen/category/category.dart';
 import 'package:commodi_flow/screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -154,7 +155,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             title: 'Kelola Kategori',
                             subtitle:
                                 'Tambah/edit jenis pemasukan & pengeluaran',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CategoryPage(),
+                                ),
+                              );
+                            },
                           ),
                           _buildDivider(),
                           _buildMenuItem(
@@ -173,7 +181,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             iconColor: Colors.orange,
                             title: 'Bantuan & Dukungan',
                             subtitle: 'Hubungi developer atau baca panduan',
-                            onTap: () {},
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Fitur ini belum tersedia. Silakan hubungi developer lewat WA wkwkwkwk.',
+                                  ),
+                                  duration: Duration(seconds: 3),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
