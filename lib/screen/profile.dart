@@ -172,7 +172,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             title: 'Ekspor Laporan',
                             subtitle:
                                 'Unduh laporan laba rugi bulanan (PDF/Excel)',
-                            onTap: () {},
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Fitur ini belum tersedia. Silakan hubungi developer lewat WA wkwkwkwk.',
+                                  ),
+                                  duration: Duration(seconds: 3),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                            },
                           ),
                           _buildDivider(),
                           _buildMenuItem(

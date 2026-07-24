@@ -434,7 +434,16 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         elevation: 1,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Fitur unduh Excel belum tersedia.'),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 3),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -444,6 +453,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 32),
                   ],
                 ),
               ),
