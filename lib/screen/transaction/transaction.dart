@@ -342,7 +342,6 @@ class _TransactionPageState extends State<TransactionPage> {
           ),
           backgroundColor: Colors.white,
           elevation: 0,
-          // --- UI HEADER DENGAN SEARCH & FILTER ---
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(140),
             child: Column(

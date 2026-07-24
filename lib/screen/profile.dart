@@ -122,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
 
                     Text(
                       userName,

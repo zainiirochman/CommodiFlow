@@ -210,7 +210,7 @@ class _EditPageState extends State<EditPage> {
               onPressed: _isSaving ? null : _updateData,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
               ),
               child: _isSaving

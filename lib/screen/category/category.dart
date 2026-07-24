@@ -1,3 +1,4 @@
+import 'package:commodi_flow/screen/category/edit.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -88,7 +89,7 @@ class _CategoryPageState extends State<CategoryPage> {
     _filteredCategories = tempCategory;
   }
 
-  Future<void> _deleteCategory(String id, String tableName) async {
+  Future<void> _deleteCategory(String id) async {
     bool confirm =
         await showDialog(
           context: context,
@@ -125,7 +126,10 @@ class _CategoryPageState extends State<CategoryPage> {
     if (!confirm) return;
 
     try {
-      await Supabase.instance.client.from(tableName).delete().eq('id', id);
+      await Supabase.instance.client
+          .from('kategori_transaksi')
+          .delete()
+          .eq('id', id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -195,7 +199,13 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
       body: _isLoading
-          ? Center(child: Lottie.asset('assets/lottie/Loading.json'))
+          ? Center(
+              child: Lottie.asset(
+                'assets/lottie/Loading.json',
+                height: 250,
+                width: 250,
+              ),
+            )
           : _buildCategoryList(),
     );
   }
@@ -221,25 +231,25 @@ class _CategoryPageState extends State<CategoryPage> {
           iconColor: isIncome ? Colors.green : Colors.red,
           title: namaKategori,
           subtitle: jenis,
-          onDelete: () => _deleteCategory(id, 'kategori_transaksi'),
-          onEdit: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Fitur edit kategori belum tersedia.'),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          },
-          // onEdit: () async {
-          //   final result = await Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => EditPage(
-          //         itemData: ctxt, tableName: 'kategori_transaksi',
-          //       ),
+          onDelete: () => _deleteCategory(id),
+          // onEdit: () {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(
+          //       content: Text('Fitur edit kategori belum tersedia.'),
+          //       backgroundColor: Colors.orange,
           //     ),
           //   );
           // },
+          onEdit: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditPage(itemData: ctxt)),
+            );
+            if (result == true) {
+              await _fetchCategories();
+              setState(() {});
+            }
+          },
         );
       },
     );
