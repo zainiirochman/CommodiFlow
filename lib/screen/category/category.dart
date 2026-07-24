@@ -157,11 +157,16 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const InputPage()),
           );
+
+          if (result == true) {
+            await _fetchCategories();
+            setState(() {});
+          }
         },
         backgroundColor: Colors.green,
         child: Icon(Icons.add, color: Colors.white),
