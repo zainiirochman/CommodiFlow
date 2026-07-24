@@ -1,4 +1,5 @@
 import 'package:commodi_flow/screen/category/edit.dart';
+import 'package:commodi_flow/screen/category/input.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -155,6 +156,17 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const InputPage()),
+          );
+        },
+        backgroundColor: Colors.green,
+        child: Icon(Icons.add, color: Colors.white),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      ),
       appBar: AppBar(
         title: const Text(
           'Kategori Transaksi',
@@ -232,14 +244,6 @@ class _CategoryPageState extends State<CategoryPage> {
           title: namaKategori,
           subtitle: jenis,
           onDelete: () => _deleteCategory(id),
-          // onEdit: () {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(
-          //       content: Text('Fitur edit kategori belum tersedia.'),
-          //       backgroundColor: Colors.orange,
-          //     ),
-          //   );
-          // },
           onEdit: () async {
             final result = await Navigator.push(
               context,
