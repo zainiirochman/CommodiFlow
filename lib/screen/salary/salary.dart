@@ -71,14 +71,14 @@ class _SalaryPageState extends State<SalaryPage> {
     }
   }
 
-  Future<void> _deleteSalary(String id) async {
+  Future<void> _deleteSalary(String id, String? transaksiId) async {
     bool confirm =
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Hapus Data?'),
             content: const Text(
-              'Data yang dihapus tidak dapat dikembalikan. Lanjutkan?',
+              'Data gaji dan riwayat pengeluaran kas akan dihapus. Lanjutkan?',
             ),
             actions: [
               TextButton(
@@ -105,10 +105,18 @@ class _SalaryPageState extends State<SalaryPage> {
 
     try {
       await Supabase.instance.client.from('riwayat_gaji').delete().eq('id', id);
+
+      if (transaksiId != null) {
+        await Supabase.instance.client
+            .from('transaksi')
+            .delete()
+            .eq('id', transaksiId);
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Data berhasil dihapus!'),
+            content: Text('Gaji & Pengeluaran kas berhasil dibatalkan!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -574,7 +582,10 @@ class _SalaryPageState extends State<SalaryPage> {
                                                 _fetchData();
                                               }
                                             } else if (value == 'delete') {
-                                              _deleteSalary(data['id']);
+                                              _deleteSalary(
+                                                data['id'],
+                                                data['transaksi_id'],
+                                              );
                                             }
                                           },
                                           itemBuilder: (BuildContext context) =>
