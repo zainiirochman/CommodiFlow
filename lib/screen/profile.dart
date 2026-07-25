@@ -1,5 +1,7 @@
 import 'package:commodi_flow/screen/category/category.dart';
 import 'package:commodi_flow/screen/login.dart';
+import 'package:commodi_flow/screen/salary/salary.dart';
+import 'package:commodi_flow/screen/shipping/shipping.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottie/lottie.dart';
@@ -165,27 +167,41 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                           ),
                           _buildDivider(),
+
                           _buildMenuItem(
-                            icon: Icons.picture_as_pdf_rounded,
+                            icon: Icons.people_alt_rounded,
                             iconBgColor: Colors.blue.shade50,
                             iconColor: Colors.blue,
-                            title: 'Ekspor Laporan',
-                            subtitle:
-                                'Unduh laporan laba rugi bulanan (PDF/Excel)',
+                            title: 'Karyawan & Gaji',
+                            subtitle: 'Kelola data karyawan dan gaji mereka',
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Fitur ini belum tersedia. Silakan hubungi developer lewat WA wkwkwkwk.',
-                                  ),
-                                  duration: Duration(seconds: 3),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.orange,
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SalaryPage(),
                                 ),
                               );
                             },
                           ),
                           _buildDivider(),
+
+                          _buildMenuItem(
+                            icon: Icons.local_shipping_rounded,
+                            iconBgColor: Colors.green.shade50,
+                            iconColor: Colors.green,
+                            title: 'Kelola Tujuan Pengiriman',
+                            subtitle: 'Kelola data tujuan pengiriman',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ShippingPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildDivider(),
+
                           _buildMenuItem(
                             icon: Icons.help_outline_rounded,
                             iconBgColor: Colors.orange.shade50,
