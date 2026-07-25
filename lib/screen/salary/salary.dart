@@ -1,3 +1,4 @@
+import 'package:commodi_flow/screen/salary/edit.dart';
 import 'package:commodi_flow/screen/salary/input.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -63,6 +64,61 @@ class _SalaryPageState extends State<SalaryPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Gagal memuat data: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteSalary(String id) async {
+    bool confirm =
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Hapus Data?'),
+            content: const Text(
+              'Data yang dihapus tidak dapat dikembalikan. Lanjutkan?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text(
+                  'Batal',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  'Hapus',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirm) return;
+
+    try {
+      await Supabase.instance.client.from('riwayat_gaji').delete().eq('id', id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Data berhasil dihapus!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _fetchData();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menghapus: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -483,13 +539,77 @@ class _SalaryPageState extends State<SalaryPage> {
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      _formatRupiah(totalGaji),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: Colors.red,
-                                      ),
+
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          _formatRupiah(totalGaji),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        PopupMenuButton<String>(
+                                          icon: const Icon(
+                                            Icons.more_vert,
+                                            color: Colors.grey,
+                                            size: 20,
+                                          ),
+                                          onSelected: (value) async {
+                                            if (value == 'edit') {
+                                              final result =
+                                                  await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditPage(
+                                                            salaryData: data,
+                                                          ),
+                                                    ),
+                                                  );
+
+                                              if (result == true) {
+                                                _fetchData();
+                                              }
+                                            } else if (value == 'delete') {
+                                              _deleteSalary(data['id']);
+                                            }
+                                          },
+                                          itemBuilder: (BuildContext context) =>
+                                              [
+                                                const PopupMenuItem(
+                                                  value: 'edit',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.edit,
+                                                        size: 18,
+                                                        color: Colors.blue,
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      Text('Edit'),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: 'delete',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.delete,
+                                                        size: 18,
+                                                        color: Colors.red,
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      Text('Hapus'),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
