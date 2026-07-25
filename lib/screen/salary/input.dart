@@ -148,7 +148,6 @@ class _InputPageState extends State<InputPage> {
           .select('id')
           .single();
 
-      // 4. Insert ke tabel `riwayat_gaji`
       await Supabase.instance.client.from('riwayat_gaji').insert({
         'user_id': userId,
         'karyawan_id': _selectedKaryawanId,
@@ -243,7 +242,6 @@ class _InputPageState extends State<InputPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // --- 2. TANGGAL ---
                   TextField(
                     controller: _tanggalCtrl,
                     readOnly: true,
@@ -269,9 +267,7 @@ class _InputPageState extends State<InputPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // --- 3. UI DINAMIS BERDASARKAN PERAN ---
                   if (_selectedRole == 'Sopir') ...[
-                    // KHUSUS SOPIR: Tampilkan dropdown Rute/Tujuan
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(

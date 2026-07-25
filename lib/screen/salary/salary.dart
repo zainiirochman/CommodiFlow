@@ -14,13 +14,12 @@ class _SalaryPageState extends State<SalaryPage> {
 
   List<dynamic> _allSalaryData = [];
   List<dynamic> _filteredSalaryData = [];
-  List<dynamic> _karyawanList = []; // Untuk daftar di dropdown filter
+  List<dynamic> _karyawanList = [];
 
-  // --- VARIABEL FILTER ---
   DateTime? _startDate;
   DateTime? _endDate;
   String _filterDateLabel = 'Semua Waktu';
-  String? _selectedKaryawanId; // null = Semua Karyawan
+  String? _selectedKaryawanId;
 
   @override
   void initState() {
@@ -28,14 +27,12 @@ class _SalaryPageState extends State<SalaryPage> {
     _fetchData();
   }
 
-  // --- MENGAMBIL DATA (RIWAYAT & DAFTAR KARYAWAN) ---
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) return;
 
-      // 1. Ambil Riwayat Gaji
       final responseGaji = await Supabase.instance.client
           .from('riwayat_gaji')
           .select('''
@@ -47,7 +44,6 @@ class _SalaryPageState extends State<SalaryPage> {
           .order('tanggal', ascending: false)
           .order('created_at', ascending: false);
 
-      // 2. Ambil Daftar Karyawan (Untuk Filter)
       final responseKaryawan = await Supabase.instance.client
           .from('karyawan')
           .select('id, nama, peran')
@@ -57,7 +53,7 @@ class _SalaryPageState extends State<SalaryPage> {
         setState(() {
           _allSalaryData = responseGaji;
           _karyawanList = responseKaryawan;
-          _applyFilters(); // Terapkan filter default (semua)
+          _applyFilters();
           _isLoading = false;
         });
       }
@@ -74,11 +70,9 @@ class _SalaryPageState extends State<SalaryPage> {
     }
   }
 
-  // --- LOGIKA FILTER & HITUNG TOTAL ---
   void _applyFilters() {
     var temp = _allSalaryData;
 
-    // 1. Filter Tanggal
     if (_startDate != null && _endDate != null) {
       final start = DateTime(
         _startDate!.year,
@@ -105,7 +99,6 @@ class _SalaryPageState extends State<SalaryPage> {
       }).toList();
     }
 
-    // 2. Filter Karyawan
     if (_selectedKaryawanId != null) {
       temp = temp
           .where((item) => item['karyawan_id'] == _selectedKaryawanId)
@@ -117,7 +110,6 @@ class _SalaryPageState extends State<SalaryPage> {
     });
   }
 
-  // Menghitung Total Gaji dari data yang difilter
   int _calculateTotalFiltered() {
     int total = 0;
     for (var item in _filteredSalaryData) {
@@ -126,7 +118,6 @@ class _SalaryPageState extends State<SalaryPage> {
     return total;
   }
 
-  // --- MENU FILTER BOTTOM SHEET ---
   void _showFilterModal() {
     showModalBottomSheet(
       context: context,
@@ -154,7 +145,6 @@ class _SalaryPageState extends State<SalaryPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Filter Karyawan
                   const Text(
                     'Pilih Karyawan',
                     style: TextStyle(
@@ -188,7 +178,6 @@ class _SalaryPageState extends State<SalaryPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Filter Tanggal
                   const Text(
                     'Rentang Tanggal',
                     style: TextStyle(
@@ -248,7 +237,6 @@ class _SalaryPageState extends State<SalaryPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Tombol Terapkan
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -273,7 +261,6 @@ class _SalaryPageState extends State<SalaryPage> {
     );
   }
 
-  // --- HELPER FORMATTER ---
   String _formatRupiah(int amount) {
     return 'Rp ' +
         amount.toString().replaceAllMapped(
@@ -342,7 +329,6 @@ class _SalaryPageState extends State<SalaryPage> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // --- KARTU TOTAL AKUMULASI (RINGKASAN BOS) ---
                 Container(
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -405,7 +391,6 @@ class _SalaryPageState extends State<SalaryPage> {
                   ),
                 ),
 
-                // --- LIST DATA ---
                 Expanded(
                   child: _filteredSalaryData.isEmpty
                       ? _buildEmptyState()
