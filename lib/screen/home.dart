@@ -592,55 +592,58 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildRecentTransactions() {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemCount: _transactions.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.grey[200]),
-      itemBuilder: (context, index) {
-        final trxt = _transactions[index];
-        final kategoriData = trxt['kategori_transaksi'] ?? {};
+    return RefreshIndicator(
+      onRefresh: _fetchData,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        itemCount: _transactions.length,
+        separatorBuilder: (context, index) => Divider(color: Colors.grey[200]),
+        itemBuilder: (context, index) {
+          final trxt = _transactions[index];
+          final kategoriData = trxt['kategori_transaksi'] ?? {};
 
-        final isIncome = kategoriData['jenis'] == 'Pemasukan';
+          final isIncome = kategoriData['jenis'] == 'Pemasukan';
 
-        final title = kategoriData['nama_kategori'] ?? 'Transaksi';
+          final title = kategoriData['nama_kategori'] ?? 'Transaksi';
 
-        final dateStr = _formatDate(trxt['tanggal']);
+          final dateStr = _formatDate(trxt['tanggal']);
 
-        final amount = (trxt['nominal'] ?? 0).toDouble();
-        final amountStr = _formatRupiah(
-          amount,
-          withSign: true,
-          isIncome: isIncome,
-        );
+          final amount = (trxt['nominal'] ?? 0).toDouble();
+          final amountStr = _formatRupiah(
+            amount,
+            withSign: true,
+            isIncome: isIncome,
+          );
 
-        return ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(
-            backgroundColor: isIncome ? Colors.green[50] : Colors.red[50],
-            child: Icon(
-              isIncome ? Icons.account_balance_wallet : Icons.receipt_long,
-              color: isIncome ? Colors.green : Colors.red,
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: CircleAvatar(
+              backgroundColor: isIncome ? Colors.green[50] : Colors.red[50],
+              child: Icon(
+                isIncome ? Icons.account_balance_wallet : Icons.receipt_long,
+                color: isIncome ? Colors.green : Colors.red,
+              ),
             ),
-          ),
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            dateStr,
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-          ),
-          trailing: Text(
-            amountStr,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isIncome ? Colors.green : Colors.red,
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        );
-      },
+            subtitle: Text(
+              dateStr,
+              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            ),
+            trailing: Text(
+              amountStr,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isIncome ? Colors.green : Colors.red,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

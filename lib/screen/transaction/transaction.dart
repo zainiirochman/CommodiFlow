@@ -535,58 +535,62 @@ class _TransactionPageState extends State<TransactionPage> {
       return _buildEmptyState('Tidak ada riwayat pergerakan stok ditemukan.');
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: _filteredStocks.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.grey[200]),
-      itemBuilder: (context, index) {
-        final stok = _filteredStocks[index];
-        final id = stok['id'];
-        final jenis = stok['jenis_pergerakan'];
-        final isMasuk = jenis == 'Masuk';
-        final keterangan = stok['keterangan'] ?? '';
-        final dateStr = _formatDate(stok['tanggal']);
+    return RefreshIndicator(
+      onRefresh: _fetchData,
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: _filteredStocks.length,
+        separatorBuilder: (context, index) => Divider(color: Colors.grey[200]),
+        itemBuilder: (context, index) {
+          final stok = _filteredStocks[index];
+          final id = stok['id'];
+          final jenis = stok['jenis_pergerakan'];
+          final isMasuk = jenis == 'Masuk';
+          final keterangan = stok['keterangan'] ?? '';
+          final dateStr = _formatDate(stok['tanggal']);
 
-        final qty = (stok['jumlah_kg'] ?? 0).toDouble();
-        final qtyStr = isMasuk ? '+ $qty Kg' : '- $qty Kg';
+          final qty = (stok['jumlah_kg'] ?? 0).toDouble();
+          final qtyStr = isMasuk ? '+ $qty Kg' : '- $qty Kg';
 
-        Color iconColor = Colors.orange;
-        IconData iconData = Icons.swap_horiz;
-        if (jenis == 'Masuk') {
-          iconColor = Colors.blue;
-          iconData = Icons.input;
-        } else if (jenis == 'Keluar') {
-          iconColor = Colors.orange;
-          iconData = Icons.output;
-        } else {
-          iconColor = Colors.grey;
-          iconData = Icons.trending_down;
-        }
+          Color iconColor = Colors.orange;
+          IconData iconData = Icons.swap_horiz;
+          if (jenis == 'Masuk') {
+            iconColor = Colors.blue;
+            iconData = Icons.input;
+          } else if (jenis == 'Keluar') {
+            iconColor = Colors.orange;
+            iconData = Icons.output;
+          } else {
+            iconColor = Colors.grey;
+            iconData = Icons.trending_down;
+          }
 
-        return _buildListItem(
-          isIncome: isMasuk,
-          icon: iconData,
-          iconColor: iconColor,
-          title: 'Stok $jenis',
-          subtitle: '$dateStr ${keterangan.isNotEmpty ? " • $keterangan" : ""}',
-          trailingText: qtyStr,
-          trailingColor: iconColor,
-          onEdit: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    EditPage(itemData: stok, tableName: 'pergerakan_stok'),
-              ),
-            );
-            if (result == true) {
-              await _fetchData();
-              setState(() {});
-            }
-          },
-          onDelete: () => _deleteData(id, 'pergerakan_stok'),
-        );
-      },
+          return _buildListItem(
+            isIncome: isMasuk,
+            icon: iconData,
+            iconColor: iconColor,
+            title: 'Stok $jenis',
+            subtitle:
+                '$dateStr ${keterangan.isNotEmpty ? " • $keterangan" : ""}',
+            trailingText: qtyStr,
+            trailingColor: iconColor,
+            onEdit: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      EditPage(itemData: stok, tableName: 'pergerakan_stok'),
+                ),
+              );
+              if (result == true) {
+                await _fetchData();
+                setState(() {});
+              }
+            },
+            onDelete: () => _deleteData(id, 'pergerakan_stok'),
+          );
+        },
+      ),
     );
   }
 

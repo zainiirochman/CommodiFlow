@@ -458,175 +458,178 @@ class _SalaryPageState extends State<SalaryPage> {
                 Expanded(
                   child: _filteredSalaryData.isEmpty
                       ? _buildEmptyState()
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: _filteredSalaryData.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final data = _filteredSalaryData[index];
+                      : RefreshIndicator(
+                          onRefresh: _fetchData,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: _filteredSalaryData.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final data = _filteredSalaryData[index];
 
-                            final karyawan = data['karyawan'] ?? {};
-                            final namaKaryawan =
-                                karyawan['nama'] ?? 'Karyawan Dihapus';
-                            final peran =
-                                karyawan['peran'] ?? 'Tidak diketahui';
+                              final karyawan = data['karyawan'] ?? {};
+                              final namaKaryawan =
+                                  karyawan['nama'] ?? 'Karyawan Dihapus';
+                              final peran =
+                                  karyawan['peran'] ?? 'Tidak diketahui';
 
-                            final totalGaji = data['total_gaji'] as int;
-                            final tanggal = _formatDate(data['tanggal']);
+                              final totalGaji = data['total_gaji'] as int;
+                              final tanggal = _formatDate(data['tanggal']);
 
-                            final isSopir = peran == 'Sopir';
-                            final icon = isSopir
-                                ? Icons.local_shipping
-                                : Icons.fitness_center;
-                            final iconColor = isSopir
-                                ? Colors.blue
-                                : Colors.orange;
+                              final isSopir = peran == 'Sopir';
+                              final icon = isSopir
+                                  ? Icons.local_shipping
+                                  : Icons.fitness_center;
+                              final iconColor = isSopir
+                                  ? Colors.blue
+                                  : Colors.orange;
 
-                            String rincian = '';
-                            if (isSopir) {
-                              final tujuan = data['tarif_tujuan'];
-                              rincian =
-                                  'Rute: ${tujuan != null ? tujuan['nama_tujuan'] : '?'}';
-                            } else {
-                              final kg = data['jumlah_kg'] ?? 0;
-                              final tarif = data['tarif_per_kg'] ?? 0;
-                              rincian = '$kg Kg × ${_formatRupiah(tarif)}';
-                            }
+                              String rincian = '';
+                              if (isSopir) {
+                                final tujuan = data['tarif_tujuan'];
+                                rincian =
+                                    'Rute: ${tujuan != null ? tujuan['nama_tujuan'] : '?'}';
+                              } else {
+                                final kg = data['jumlah_kg'] ?? 0;
+                                final tarif = data['tarif_per_kg'] ?? 0;
+                                rincian = '$kg Kg × ${_formatRupiah(tarif)}';
+                              }
 
-                            return Card(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.grey.shade200),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: iconColor.withOpacity(
-                                        0.1,
+                              return Card(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(color: Colors.grey.shade200),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: iconColor.withOpacity(
+                                          0.1,
+                                        ),
+                                        radius: 24,
+                                        child: Icon(
+                                          icon,
+                                          color: iconColor,
+                                          size: 28,
+                                        ),
                                       ),
-                                      radius: 24,
-                                      child: Icon(
-                                        icon,
-                                        color: iconColor,
-                                        size: 28,
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              namaKaryawan,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              rincian,
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              tanggal,
+                                              style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            namaKaryawan,
+                                            _formatRupiah(totalGaji),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 16,
+                                              fontSize: 15,
+                                              color: Colors.red,
                                             ),
                                           ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            rincian,
-                                            style: TextStyle(
-                                              color: Colors.grey.shade700,
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            tanggal,
-                                            style: const TextStyle(
+                                          PopupMenuButton<String>(
+                                            icon: const Icon(
+                                              Icons.more_vert,
                                               color: Colors.grey,
-                                              fontSize: 12,
+                                              size: 20,
                                             ),
+                                            onSelected: (value) async {
+                                              if (value == 'edit') {
+                                                final result =
+                                                    await Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditPage(
+                                                              salaryData: data,
+                                                            ),
+                                                      ),
+                                                    );
+
+                                                if (result == true) {
+                                                  _fetchData();
+                                                }
+                                              } else if (value == 'delete') {
+                                                _deleteSalary(
+                                                  data['id'],
+                                                  data['transaksi_id'],
+                                                );
+                                              }
+                                            },
+                                            itemBuilder:
+                                                (BuildContext context) => [
+                                                  const PopupMenuItem(
+                                                    value: 'edit',
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.edit,
+                                                          size: 18,
+                                                          color: Colors.blue,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text('Edit'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const PopupMenuItem(
+                                                    value: 'delete',
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.delete,
+                                                          size: 18,
+                                                          color: Colors.red,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text('Hapus'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                           ),
                                         ],
                                       ),
-                                    ),
-
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          _formatRupiah(totalGaji),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                        PopupMenuButton<String>(
-                                          icon: const Icon(
-                                            Icons.more_vert,
-                                            color: Colors.grey,
-                                            size: 20,
-                                          ),
-                                          onSelected: (value) async {
-                                            if (value == 'edit') {
-                                              final result =
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          EditPage(
-                                                            salaryData: data,
-                                                          ),
-                                                    ),
-                                                  );
-
-                                              if (result == true) {
-                                                _fetchData();
-                                              }
-                                            } else if (value == 'delete') {
-                                              _deleteSalary(
-                                                data['id'],
-                                                data['transaksi_id'],
-                                              );
-                                            }
-                                          },
-                                          itemBuilder: (BuildContext context) =>
-                                              [
-                                                const PopupMenuItem(
-                                                  value: 'edit',
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.edit,
-                                                        size: 18,
-                                                        color: Colors.blue,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text('Edit'),
-                                                    ],
-                                                  ),
-                                                ),
-                                                const PopupMenuItem(
-                                                  value: 'delete',
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.delete,
-                                                        size: 18,
-                                                        color: Colors.red,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text('Hapus'),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                 ),
               ],

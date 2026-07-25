@@ -228,34 +228,39 @@ class _ShippingPageState extends State<ShippingPage> {
     if (_filteredShipping.isEmpty) {
       return _buildEmptyState('Tidak ada tujuan pengiriman yang ditemukan.');
     }
-    return ListView.separated(
-      padding: EdgeInsets.all(16),
-      itemCount: _filteredShipping.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.grey),
-      itemBuilder: (context, index) {
-        final spxt = _filteredShipping[index];
-        final id = spxt['id'];
-        final namaTujuan = spxt['nama_tujuan'] ?? '';
-        final ongkos = spxt['ongkos'].toString();
+    return RefreshIndicator(
+      onRefresh: _fetchShipping,
+      child: ListView.separated(
+        padding: EdgeInsets.all(16),
+        itemCount: _filteredShipping.length,
+        separatorBuilder: (context, index) => Divider(color: Colors.grey),
+        itemBuilder: (context, index) {
+          final spxt = _filteredShipping[index];
+          final id = spxt['id'];
+          final namaTujuan = spxt['nama_tujuan'] ?? '';
+          final ongkos = spxt['ongkos'].toString();
 
-        return _buildListItem(
-          icon: Icons.local_shipping,
-          iconColor: Colors.green,
-          title: namaTujuan,
-          subtitle: ongkos,
-          onDelete: () => _deleteShipping(id),
-          onEdit: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditPage(itemData: spxt)),
-            );
-            if (result == true) {
-              await _fetchShipping();
-              setState(() {});
-            }
-          },
-        );
-      },
+          return _buildListItem(
+            icon: Icons.local_shipping,
+            iconColor: Colors.green,
+            title: namaTujuan,
+            subtitle: ongkos,
+            onDelete: () => _deleteShipping(id),
+            onEdit: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditPage(itemData: spxt),
+                ),
+              );
+              if (result == true) {
+                await _fetchShipping();
+                setState(() {});
+              }
+            },
+          );
+        },
+      ),
     );
   }
 

@@ -231,36 +231,41 @@ class _CategoryPageState extends State<CategoryPage> {
     if (_filteredCategories.isEmpty) {
       return _buildEmptyState('Tidak ada kategori yang ditemukan.');
     }
-    return ListView.separated(
-      padding: EdgeInsets.all(16),
-      itemCount: _filteredCategories.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.grey),
-      itemBuilder: (context, index) {
-        final ctxt = _filteredCategories[index];
-        final id = ctxt['id'];
-        final namaKategori = ctxt['nama_kategori'] ?? '';
-        final jenis = ctxt['jenis'] ?? '';
-        final isIncome = ctxt['jenis'] == 'Pemasukan';
+    return RefreshIndicator(
+      onRefresh: _fetchCategories,
+      child: ListView.separated(
+        padding: EdgeInsets.all(16),
+        itemCount: _filteredCategories.length,
+        separatorBuilder: (context, index) => Divider(color: Colors.grey),
+        itemBuilder: (context, index) {
+          final ctxt = _filteredCategories[index];
+          final id = ctxt['id'];
+          final namaKategori = ctxt['nama_kategori'] ?? '';
+          final jenis = ctxt['jenis'] ?? '';
+          final isIncome = ctxt['jenis'] == 'Pemasukan';
 
-        return _buildListItem(
-          isIncome: isIncome,
-          icon: isIncome ? Icons.account_balance_wallet : Icons.receipt_long,
-          iconColor: isIncome ? Colors.green : Colors.red,
-          title: namaKategori,
-          subtitle: jenis,
-          onDelete: () => _deleteCategory(id),
-          onEdit: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditPage(itemData: ctxt)),
-            );
-            if (result == true) {
-              await _fetchCategories();
-              setState(() {});
-            }
-          },
-        );
-      },
+          return _buildListItem(
+            isIncome: isIncome,
+            icon: isIncome ? Icons.account_balance_wallet : Icons.receipt_long,
+            iconColor: isIncome ? Colors.green : Colors.red,
+            title: namaKategori,
+            subtitle: jenis,
+            onDelete: () => _deleteCategory(id),
+            onEdit: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditPage(itemData: ctxt),
+                ),
+              );
+              if (result == true) {
+                await _fetchCategories();
+                setState(() {});
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
