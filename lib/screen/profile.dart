@@ -1,4 +1,5 @@
 import 'package:commodi_flow/screen/category/category.dart';
+import 'package:commodi_flow/screen/employee/employee.dart';
 import 'package:commodi_flow/screen/login.dart';
 import 'package:commodi_flow/screen/salary/salary.dart';
 import 'package:commodi_flow/screen/shipping/shipping.dart';
@@ -172,8 +173,25 @@ class _ProfilePageState extends State<ProfilePage> {
                             icon: Icons.people_alt_rounded,
                             iconBgColor: Colors.blue.shade50,
                             iconColor: Colors.blue,
-                            title: 'Karyawan & Gaji',
-                            subtitle: 'Kelola data karyawan dan gaji mereka',
+                            title: 'Karyawan',
+                            subtitle: 'Kelola data karyawan',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const EmployeePage(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildDivider(),
+
+                          _buildMenuItem(
+                            icon: Icons.attach_money_rounded,
+                            iconBgColor: Colors.blue.shade50,
+                            iconColor: Colors.blue,
+                            title: 'Gaji',
+                            subtitle: 'Kelola data gaji karyawan',
                             onTap: () {
                               Navigator.push(
                                 context,
