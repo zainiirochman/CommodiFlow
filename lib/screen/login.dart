@@ -1,6 +1,7 @@
 import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,8 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      const webClientId =
-          '418195682676-5h7eiq6no31tckmdlrn25okdvls0pavf.apps.googleusercontent.com';
+      final String webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
 
       final GoogleSignIn googleSignIn = GoogleSignIn.instance;
       await googleSignIn.initialize(serverClientId: webClientId);

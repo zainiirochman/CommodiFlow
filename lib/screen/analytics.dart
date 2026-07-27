@@ -6,6 +6,7 @@ import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/home.dart';
 import 'package:commodi_flow/screen/transaction/input.dart';
 import 'package:excel/excel.dart' hide Border;
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,9 +41,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     Colors.grey,
   ];
   String _selectedFilter = 'Bulan Ini';
-  final List<String> _filterOptions = [
-    'Bulan Ini',
-  ]; // Disederhanakan dulu untuk fokus pada bulan aktif
+  final List<String> _filterOptions = ['Bulan Ini'];
 
   @override
   void initState() {
@@ -162,7 +161,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         }
       }
 
-      // Hitung pergerakan stok mingguan berdasarkan stok awal bulan
       double startOfMonthStock =
           (totalMasukAllTime - totalKeluarAllTime) -
           (masukBulanIni - keluarBulanIni);
@@ -276,7 +274,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     try {
       var excel = Excel.createExcel();
 
-      // 1. Buat Sheet Arus Kas Mingguan
       Sheet sheetKas = excel['Arus Kas'];
       sheetKas.appendRow([
         TextCellValue('Minggu Ke'),
@@ -291,7 +288,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         ]);
       }
 
-      // 2. Buat Sheet Kategori Pengeluaran
       Sheet sheetKategori = excel['Kategori Pengeluaran'];
       sheetKategori.appendRow([
         TextCellValue('Kategori'),
@@ -304,7 +300,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         ]);
       }
 
-      // 3. Buat Sheet Pergerakan Stok
       Sheet sheetStok = excel['Pergerakan Stok'];
       sheetStok.appendRow([
         TextCellValue('Minggu Ke'),
@@ -317,37 +312,41 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         ]);
       }
 
-      // 4. Hapus sheet default bawaan (Sheet1) agar rapi
       if (excel.getDefaultSheet() != null) {
         excel.delete('Sheet1');
       }
 
-      // 5. Jadikan 'Arus Kas' sebagai sheet pertama yang terbuka
       excel.setDefaultSheet('Arus Kas');
 
-      // 6. Simpan file Excel ke bentuk bytes
       var fileBytes = excel.save();
 
       if (fileBytes != null) {
-        // JALUR AMAN: Tembak langsung ke folder Download Android
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final path =
-            '/storage/emulated/0/Download/Laporan_CommodiFlow_$timestamp.xlsx';
 
-        final file = File(path);
-        // Gunakan flush: true agar data dipastikan tertulis semua ke memori
-        await file.writeAsBytes(fileBytes, flush: true);
+        if (Platform.isAndroid) {
+          final path =
+              '/storage/emulated/0/Download/Laporan_CommodiFlow_$timestamp.xlsx';
+          final file = File(path);
+          await file.writeAsBytes(fileBytes, flush: true);
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Berhasil! File tersimpan di folder Download:\nLaporan_CommodiFlow_$timestamp.xlsx',
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Tersimpan di Download:\nLaporan_CommodiFlow_$timestamp.xlsx',
+                ),
+                backgroundColor: Colors.green,
               ),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 5),
-            ),
-          );
+            );
+          }
+        } else if (Platform.isIOS) {
+          final tempDir = Directory.systemTemp;
+          final path = '${tempDir.path}/Laporan_CommodiFlow_$timestamp.xlsx';
+          final file = File(path);
+          await file.writeAsBytes(fileBytes, flush: true);
+
+          const channel = MethodChannel('commodiflow/share');
+          await channel.invokeMethod('shareExcel', {'path': path});
         }
       }
     } catch (e) {
@@ -468,7 +467,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // --- 1. CHART ARUS KAS (BAR CHART) ---
                     _buildChartCard(
                       title: 'Arus Kas (Masuk vs Keluar)',
                       subtitle: 'Perbandingan mingguan dalam bulan ini',
@@ -480,7 +478,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // --- 2. CHART PROPORSI PENGELUARAN (PIE CHART) ---
                     _buildChartCard(
                       title: 'Proporsi Pengeluaran',
                       subtitle: 'Distribusi biaya terbesar bulan ini',
