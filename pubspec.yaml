@@ -38,9 +38,10 @@ dependencies:
   google_generative_ai: ^0.4.7
   supabase_flutter: ^2.16.0
   google_sign_in: ^7.2.0
-  lottie: ^3.5.1
+  lottie: ^3.3.0
   fl_chart: ^1.2.0
   flutter_dotenv: ^6.0.1
+  excel: ^4.0.6
 
 dev_dependencies:
   flutter_test:

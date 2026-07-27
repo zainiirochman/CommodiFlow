@@ -1,8 +1,11 @@
 // ignore_for_file: unused_local_variable, unused_field
 
+import 'dart:io';
+
 import 'package:commodi_flow/main.dart';
 import 'package:commodi_flow/screen/home.dart';
 import 'package:commodi_flow/screen/transaction/input.dart';
+import 'package:excel/excel.dart' hide Border;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:image_picker/image_picker.dart';
@@ -267,6 +270,102 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
   }
 
+  Future<void> _exportToExcel() async {
+    setState(() => _isLoading = true);
+
+    try {
+      var excel = Excel.createExcel();
+
+      // 1. Buat Sheet Arus Kas Mingguan
+      Sheet sheetKas = excel['Arus Kas'];
+      sheetKas.appendRow([
+        TextCellValue('Minggu Ke'),
+        TextCellValue('Pemasukan (Rp)'),
+        TextCellValue('Pengeluaran (Rp)'),
+      ]);
+      for (int i = 0; i < 4; i++) {
+        sheetKas.appendRow([
+          TextCellValue('Minggu ${i + 1}'),
+          DoubleCellValue(_weeklyIncome[i]),
+          DoubleCellValue(_weeklyExpense[i]),
+        ]);
+      }
+
+      // 2. Buat Sheet Kategori Pengeluaran
+      Sheet sheetKategori = excel['Kategori Pengeluaran'];
+      sheetKategori.appendRow([
+        TextCellValue('Kategori'),
+        TextCellValue('Total Pengeluaran (Rp)'),
+      ]);
+      for (var cat in _expenseCategories) {
+        sheetKategori.appendRow([
+          TextCellValue(cat.key),
+          DoubleCellValue(cat.value),
+        ]);
+      }
+
+      // 3. Buat Sheet Pergerakan Stok
+      Sheet sheetStok = excel['Pergerakan Stok'];
+      sheetStok.appendRow([
+        TextCellValue('Minggu Ke'),
+        TextCellValue('Sisa Stok (Kg)'),
+      ]);
+      for (int i = 0; i < 4; i++) {
+        sheetStok.appendRow([
+          TextCellValue('Minggu ${i + 1}'),
+          DoubleCellValue(_weeklyStock[i]),
+        ]);
+      }
+
+      // 4. Hapus sheet default bawaan (Sheet1) agar rapi
+      if (excel.getDefaultSheet() != null) {
+        excel.delete('Sheet1');
+      }
+
+      // 5. Jadikan 'Arus Kas' sebagai sheet pertama yang terbuka
+      excel.setDefaultSheet('Arus Kas');
+
+      // 6. Simpan file Excel ke bentuk bytes
+      var fileBytes = excel.save();
+
+      if (fileBytes != null) {
+        // JALUR AMAN: Tembak langsung ke folder Download Android
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final path =
+            '/storage/emulated/0/Download/Laporan_CommodiFlow_$timestamp.xlsx';
+
+        final file = File(path);
+        // Gunakan flush: true agar data dipastikan tertulis semua ke memori
+        await file.writeAsBytes(fileBytes, flush: true);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Berhasil! File tersimpan di folder Download:\nLaporan_CommodiFlow_$timestamp.xlsx',
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengekspor Excel: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -434,16 +533,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         elevation: 1,
                       ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Fitur unduh Excel belum tersedia.'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 3),
-                            backgroundColor: Colors.orange,
-                          ),
-                        );
-                      },
+                      onPressed: _exportToExcel,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
