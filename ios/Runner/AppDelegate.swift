@@ -7,6 +7,7 @@ import Flutter
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    
     GeneratedPluginRegistrant.register(with: self)
     
     if let controller = window?.rootViewController as? FlutterViewController {
@@ -19,22 +20,29 @@ import Flutter
               if let args = call.arguments as? [String: Any],
                  let path = args["path"] as? String {
                   
-                  let url = URL(fileURLWithPath: path)
-                  let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                  
-                  if let popoverController = activityViewController.popoverPresentationController {
-                      popoverController.sourceView = controller.view
-                      popoverController.sourceRect = CGRect(x: controller.view.bounds.midX, y: controller.view.bounds.midY, width: 0, height: 0)
-                      popoverController.permittedArrowDirections = []
+                  DispatchQueue.main.async {
+                      let url = URL(fileURLWithPath: path).standardizedFileURL
+                      
+                      let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                      
+                      guard let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                            let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+                            var topController = window.rootViewController else {
+                          result(FlutterError(code: "UI_ERROR", message: "Gagal menemukan layar aktif", details: nil))
+                          return
+                      }
+                      while let presentedController = topController.presentedViewController {
+                          topController = presentedController
+                      }
+                      if let popover = activityViewController.popoverPresentationController {
+                          popover.sourceView = topController.view
+                          popover.sourceRect = CGRect(x: topController.view.bounds.midX, y: topController.view.bounds.midY, width: 0, height: 0)
+                          popover.permittedArrowDirections = []
+                      }
+                      topController.present(activityViewController, animated: true, completion: nil)
+                      result(true)
                   }
-                  
-                  controller.present(activityViewController, animated: true, completion: nil)
-                  result(true)
-              } else {
-                  result(FlutterError(code: "INVALID_ARGUMENT", message: "Path is missing", details: nil))
               }
-          } else {
-              result(FlutterMethodNotImplemented)
           }
         })
     }

@@ -516,30 +516,32 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                     const SizedBox(height: 32),
 
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 24,
-                        ),
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        elevation: 1,
-                      ),
-                      onPressed: _exportToExcel,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.download, size: 20),
-                          const SizedBox(width: 8),
-                          Text('Unduh Dalam Bentuk Excel'),
-                        ],
-                      ),
-                    ),
+                    Platform.isIOS
+                        ? SizedBox.shrink()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 24,
+                              ),
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                              elevation: 1,
+                            ),
+                            onPressed: _exportToExcel,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.download, size: 20),
+                                const SizedBox(width: 8),
+                                Text('Unduh Dalam Bentuk Excel'),
+                              ],
+                            ),
+                          ),
                     SizedBox(height: 32),
                   ],
                 ),
